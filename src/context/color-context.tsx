@@ -8,12 +8,14 @@ type ColorTypes = {
   pos: string;
 };
 
+export type GradientType = {
+  type: string;
+  angle: string;
+  colors: ColorTypes[];
+};
+
 export type ColorContextType = {
-  gradientValues: {
-    type: string;
-    angle: string;
-    colors: ColorTypes[];
-  };
+  gradientValues: GradientType;
 };
 
 const generateData = (
