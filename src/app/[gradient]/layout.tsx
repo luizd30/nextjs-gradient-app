@@ -7,11 +7,11 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <div>
-        <ColorProvider>
+    <div className="flex flex-col h-full">
+      <ColorProvider>
         <Header></Header>
         {children}
-        </ColorProvider>
+      </ColorProvider>
     </div>
   );
 }
