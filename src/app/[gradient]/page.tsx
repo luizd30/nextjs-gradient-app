@@ -1,6 +1,6 @@
 "use client";
 
-import { Preview } from "@/components/ui/preview";
+import { Preview } from "@/components/preview";
 import { ColorContext, ColorContextType } from "@/context/color-context";
 import { usePathValidation } from "@/hooks/usePathValidation";
 import { redirect, usePathname } from "next/navigation";
@@ -16,5 +16,5 @@ export default function Page() {
 
   if (!validatePath()) redirect("/");
 
-    return <div>{<Preview gradient={gradientValues}/>}</div>;
+    return <div></div>;
 }

@@ -1,3 +1,4 @@
+import { Header } from "@/components/header";
 import { ColorProvider } from "@/context/color-context";
 
 export default function RootLayout({
@@ -7,7 +8,10 @@ export default function RootLayout({
 }>) {
   return (
     <div>
-        <ColorProvider>{children}</ColorProvider>
+        <ColorProvider>
+        <Header></Header>
+        {children}
+        </ColorProvider>
     </div>
   );
 }
