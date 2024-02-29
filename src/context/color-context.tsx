@@ -1,8 +1,9 @@
 "use client";
-import { useParams, useSearchParams } from "next/navigation";
-import { ReactNode, createContext, useState } from "react";
+import { sortColors } from "@/lib/sortColors";
+import { useParams, useRouter, useSearchParams } from "next/navigation";
+import { ReactNode, createContext, useEffect, useState } from "react";
 
-type ColorTypes = {
+export type ColorType = {
   id: string;
   color: string;
   pos: string;
@@ -11,11 +12,12 @@ type ColorTypes = {
 export type GradientType = {
   type: string;
   angle: string;
-  colors: ColorTypes[];
+  colors: ColorType[];
 };
 
 export type ColorContextType = {
   gradientValues: GradientType;
+  setColorPosition: (value: Omit<ColorType, "color">) => void;
 };
 
 const generateData = (
@@ -41,6 +43,7 @@ const generateData = (
 export const ColorContext = createContext<ColorContextType | null>(null);
 
 export const ColorProvider = ({ children }: { children: ReactNode }) => {
+  const router = useRouter();
   const { gradient } = useParams();
   const searchParams = useSearchParams();
 
@@ -54,8 +57,26 @@ export const ColorProvider = ({ children }: { children: ReactNode }) => {
     colors: generateData(gradient, positions),
   });
 
+  function updateGradientValues(
+    updateFn: (prev: GradientType) => GradientType
+  ) {
+    setGradientValues((prev) => updateFn({ ...prev }));
+  }
+
+  const setColorPosition = (value: Omit<ColorType, "color">) => {
+    const { id, pos } = value;
+    updateGradientValues((prev) => {
+      const updatePos = prev.colors.map((color) =>
+        color.id === id ? { ...color, pos: pos } : color
+      );
+      const sortedColors = sortColors(updatePos);
+      return { ...prev, colors: sortedColors };
+    });
+    
+  };
+
   return (
-    <ColorContext.Provider value={{ gradientValues }}>
+    <ColorContext.Provider value={{ gradientValues, setColorPosition }}>
       {children}
     </ColorContext.Provider>
   );
