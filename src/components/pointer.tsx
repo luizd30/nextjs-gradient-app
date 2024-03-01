@@ -2,7 +2,7 @@
 import { cn } from "@/lib/cn";
 import { motion } from "framer-motion";
 import React, { useRef } from "react";
-import { MeasureType } from "./preview";
+import { MeasureType } from "@/hooks/useMeasure";
 import { calcPercentValue } from "@/lib/percentValue";
 import { calcPixelValue } from "@/lib/pixelValue";
 

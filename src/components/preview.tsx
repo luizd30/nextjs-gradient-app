@@ -5,27 +5,25 @@ import {
 } from "@/context/color-context";
 import parseToCss from "@/lib/objToCss";
 import { Pointer } from "./pointer";
-import { useCallback, useContext, useState } from "react";
+import { useContext } from "react";
+import useMeasure from "@/hooks/useMeasure";
+import {
+  SelectedContext,
+  SelectedContextType,
+} from "@/context/selected-color-context";
 
-export type MeasureType = {
-  x: number;
-  y: number;
-  width: number;
-  height: number;
+type Props = {
+  gradient: GradientType;
 };
 
-export const Preview = ({ gradient }: { gradient: GradientType }) => {
-  const { gradientValues,setColorPosition } = useContext(ColorContext) as ColorContextType;
-
-  const [measure, setMeasure] = useState<MeasureType>();
-  const [selectId, setSelectId] = useState<string>(gradientValues.colors[0].id);
-
-  const measuredRef = useCallback((node: HTMLElement | null) => {
-    if (node !== null) {
-      const { width, height, x, y } = node.getBoundingClientRect();
-      setMeasure({ width: width, height: height, x: x, y: y });
-    }
-  }, []);
+export const Preview = ({ gradient }: Props) => {
+  const [measure, measuredRef] = useMeasure();
+  const { gradientValues, setColorPosition } = useContext(
+    ColorContext
+  ) as ColorContextType;
+  const { selectedColor, changeSelectedColor } = useContext(
+    SelectedContext
+  ) as SelectedContextType;
 
   return (
     <div
@@ -38,9 +36,9 @@ export const Preview = ({ gradient }: { gradient: GradientType }) => {
             <Pointer
               parentMeasures={measure}
               colorDetails={colorDetails}
-              selectId={selectId}
-              onSelect={(id) => setSelectId(id)}
-              onChange={(value) => setColorPosition(value)}
+              selectId={selectedColor.id}
+              onSelect={(e) => changeSelectedColor(e)}
+              onChange={(e) => setColorPosition(e)}
               key={colorDetails.id}
             />
           ))

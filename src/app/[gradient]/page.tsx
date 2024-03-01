@@ -3,6 +3,7 @@
 import { redirect, usePathname } from "next/navigation";
 import { usePathValidation } from "@/hooks/usePathValidation";
 import { GradientMaker } from "@/components/gradient-maker";
+import { SelectedContextProvider } from "@/context/selected-color-context";
 
 export default function Page() {
   const colorRegexp = /^\/(?:[0-9a-fA-F]{6}-){1,}[0-9a-fA-F]{6}$/;
@@ -13,7 +14,9 @@ export default function Page() {
 
   return (
     <main className="flex flex-1 justify-center items-center">
-      <GradientMaker />
+      <SelectedContextProvider>
+        <GradientMaker />
+      </SelectedContextProvider>
     </main>
   );
 }

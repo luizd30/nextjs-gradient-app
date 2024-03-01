@@ -3,6 +3,8 @@ import { sortColors } from "@/lib/sortColors";
 import { useParams, useRouter, useSearchParams } from "next/navigation";
 import { ReactNode, createContext, useEffect, useState } from "react";
 
+type Props = { children: React.ReactNode };
+
 export type ColorType = {
   id: string;
   color: string;
@@ -42,7 +44,7 @@ const generateData = (
 
 export const ColorContext = createContext<ColorContextType | null>(null);
 
-export const ColorProvider = ({ children }: { children: ReactNode }) => {
+export const ColorProvider = ({ children }: Props) => {
   const router = useRouter();
   const { gradient } = useParams();
   const searchParams = useSearchParams();
@@ -72,7 +74,6 @@ export const ColorProvider = ({ children }: { children: ReactNode }) => {
       const sortedColors = sortColors(updatePos);
       return { ...prev, colors: sortedColors };
     });
-    
   };
 
   return (
