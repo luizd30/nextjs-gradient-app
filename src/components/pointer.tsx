@@ -57,7 +57,7 @@ export const Pointer = ({
       className={cn(
         "flex items-center justify-center absolute h-6 w-6 rounded-full bg-neutral-50 border-2 border-neutral-300 transition-shadow cursor-pointer",
         {
-          "border-neutral-950 shadow-[0_0px_0px_5px_rgba(10,10,10,0.25)] z-50":
+          "border-neutral-950 shadow-[0_0px_0px_5px_rgba(10,10,10,0.25)] z-20":
             selectId === id,
         }
       )}

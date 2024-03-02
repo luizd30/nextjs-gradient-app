@@ -12,13 +12,9 @@ import {
   SelectedContextType,
 } from "@/context/selected-color-context";
 
-type Props = {
-  gradient: GradientType;
-};
-
-export const Preview = ({ gradient }: Props) => {
+export const Preview = () => {
   const [measure, measuredRef] = useMeasure();
-  const { gradientValues, setColorPosition } = useContext(
+  const { gradientValues, setPosition } = useContext(
     ColorContext
   ) as ColorContextType;
   const { selectedColor, changeSelectedColor } = useContext(
@@ -29,7 +25,7 @@ export const Preview = ({ gradient }: Props) => {
     <div
       ref={measuredRef}
       className="h-[390px] rounded-lg relative "
-      style={{ backgroundImage: parseToCss(gradient) }}
+      style={{ backgroundImage: parseToCss(gradientValues) }}
     >
       {measure
         ? gradientValues.colors.map((colorDetails) => (
@@ -38,7 +34,7 @@ export const Preview = ({ gradient }: Props) => {
               colorDetails={colorDetails}
               selectId={selectedColor.id}
               onSelect={(e) => changeSelectedColor(e)}
-              onChange={(e) => setColorPosition(e)}
+              onChange={(e) => setPosition(e)}
               key={colorDetails.id}
             />
           ))

@@ -12,12 +12,14 @@ export const SelectedContext = createContext<SelectedContextType | null>(null);
 
 export const SelectedContextProvider = ({ children }: Props) => {
   const { gradientValues } = useContext(ColorContext) as ColorContextType;
-  const [selectedColor, setSelectedColor] = useState(gradientValues.colors[0]);
+  const [currentColor, setCurrentColor] = useState(gradientValues.colors[0].id);
+
+  const selectedColor = gradientValues.colors.find(
+    ({ id }) => id === currentColor
+  ) as ColorType;
 
   const changeSelectedColor = (id: string) => {
-    const color = gradientValues.colors.find((color) => color.id === id);
-    if (!color) return;
-    setSelectedColor(color);
+    setCurrentColor(id);
   };
 
   return (
