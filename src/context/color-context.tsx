@@ -1,7 +1,14 @@
 "use client";
+import useDebounce from "@/hooks/useDebounce";
+import { generateData } from "@/lib/colorUtils";
 import { sortColors } from "@/lib/sortColors";
-import { useParams, useRouter, useSearchParams } from "next/navigation";
-import { ReactNode, createContext, useState } from "react";
+import updateHistory from "@/lib/updateHistory";
+import { useParams, useSearchParams } from "next/navigation";
+import { createContext, useCallback, useState } from "react";
+
+const DEFAULT_ANGLE = "90";
+const DEFAULT_TYPE = "linear";
+const DEBOUNCE_DELAY = 500;
 
 type Props = { children: React.ReactNode };
 
@@ -23,36 +30,15 @@ export type ColorContextType = {
   setColor: (value: Omit<ColorType, "pos">) => void;
 };
 
-const generateData = (
-  colorString: string | string[],
-  positions: string | null
-) => {
-  if (Array.isArray(colorString)) return [];
-  const colors = colorString.split("-");
-
-  const numCores = colors.length;
-  const intervalo = 100 / (numCores - 1);
-
-  const objetosCores = colors.map((color, index) => ({
-    id: crypto.randomUUID(),
-    color: color,
-    pos: positions
-      ? `${positions.split(",")[index]}`
-      : `${Math.floor(index * intervalo)}`,
-  }));
-  return objetosCores;
-};
-
 export const ColorContext = createContext<ColorContextType | null>(null);
 
 export const ColorProvider = ({ children }: Props) => {
-  const router = useRouter();
   const { gradient } = useParams();
   const searchParams = useSearchParams();
 
   const positions = searchParams.get("pos");
-  const angle = searchParams.get("angle") || "90";
-  const type = searchParams.get("type") || "linear";
+  const angle = searchParams.get("angle") || DEFAULT_ANGLE;
+  const type = searchParams.get("type") || DEFAULT_TYPE;
 
   const [gradientValues, setGradientValues] = useState({
     type: type,
@@ -60,33 +46,45 @@ export const ColorProvider = ({ children }: Props) => {
     colors: generateData(gradient, positions),
   });
 
-  function updateGradientValues(
-    updateFn: (prev: GradientType) => GradientType
-  ) {
-    setGradientValues((prev) => updateFn({ ...prev }));
-  }
+  const handleUpdateHistory = useCallback(() => {
+    updateHistory(gradientValues);
+  }, [gradientValues]);
 
-  const setPosition = (value: Omit<ColorType, "color">) => {
-    const { id, pos } = value;
-    updateGradientValues((prev) => {
-      const updatePos = prev.colors.map((obj) =>
-        obj.id === id ? { ...obj, pos: pos } : obj
-      );
-      const sortedColors = sortColors(updatePos);
-      return { ...prev, colors: sortedColors };
-    });
-  };
+  useDebounce(handleUpdateHistory, DEBOUNCE_DELAY, [gradientValues]);
 
-  const setColor = (value: Omit<ColorType, "pos">) => {
-    const { id, color } = value;
-    updateGradientValues((prev) => {
-      const updateColor = prev.colors.map((obj) =>
-        obj.id === id ? { ...obj, color: color } : obj
-      );
-      
-      return { ...prev, colors: updateColor };
-    });
-  };
+  const updateGradientValues = useCallback(
+    (updateFn: (prev: GradientType) => GradientType) => {
+      setGradientValues((prev) => updateFn({ ...prev }));
+    },
+    []
+  );
+
+  const setPosition = useCallback(
+    (value: Omit<ColorType, "color">) => {
+      const { id, pos } = value;
+      updateGradientValues((prev) => {
+        const updatePos = prev.colors.map((obj) =>
+          obj.id === id ? { ...obj, pos } : obj
+        );
+        const sortedColors = sortColors(updatePos);
+        return { ...prev, colors: sortedColors };
+      });
+    },
+    [updateGradientValues]
+  );
+
+  const setColor = useCallback(
+    (value: Omit<ColorType, "pos">) => {
+      const { id, color } = value;
+      updateGradientValues((prev) => {
+        const updateColor = prev.colors.map((obj) =>
+          obj.id === id ? { ...obj, color } : obj
+        );
+        return { ...prev, colors: updateColor };
+      });
+    },
+    [updateGradientValues]
+  );
 
   return (
     <ColorContext.Provider value={{ gradientValues, setPosition, setColor }}>

@@ -15,15 +15,12 @@ export type MeasureType = {
 function useMeasure(): UseMeasureReturnType {
   const [measure, setMeasure] = useState<MeasureType>();
 
-  const measuredRef = useCallback(
-    (node: HTMLElement | null) => {
-      if (node !== null) {
-        const { width, height, x, y } = node.getBoundingClientRect();
-        setMeasure({ width, height, x, y });
-      }
-    },
-    []
-  );
+  const measuredRef = useCallback((node: HTMLElement | null) => {
+    if (node !== null) {
+      const { width, height, x, y } = node.getBoundingClientRect();
+      setMeasure({ width, height, x, y });
+    }
+  }, []);
 
   return [measure, measuredRef];
 }
